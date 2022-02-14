@@ -12,6 +12,7 @@ namespace Platformer.Mechanics
     /// This is the main class used to implement control of the player.
     /// It is a superset of the AnimationController class, but is inlined to allow for any kind of customisation.
     /// </summary>
+    /// 
     public class PlayerController : KinematicObject
     {
         public AudioClip jumpAudio;
@@ -42,6 +43,9 @@ namespace Platformer.Mechanics
 
         public Bounds Bounds => collider2d.bounds;
 
+        public Transform[] hitpoint;
+        public GameObject hitpoints;
+        public LayerMask whatisPlatform;
         void Awake()
         {
             health = GetComponent<Health>();
@@ -56,12 +60,24 @@ namespace Platformer.Mechanics
             if (controlEnabled)
             {
                 move.x = Input.GetAxis("Horizontal");
+                if(move.x < 0)
+                {
+                    hitpoints.transform.localRotation = Quaternion.Euler(0, 180f, 0);
+                }else if(move.x > 0)
+                {
+                    hitpoints.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                }
                 if (jumpState == JumpState.Grounded && Input.GetButtonDown("Jump"))
                     jumpState = JumpState.PrepareToJump;
                 else if (Input.GetButtonUp("Jump"))
                 {
                     stopJump = true;
                     Schedule<PlayerStopJump>().player = this;
+                }
+                // add attack
+                else if (Input.GetKeyDown(KeyCode.X))
+                {
+                    animator.SetTrigger("attack");
                 }
             }
             else
@@ -137,5 +153,21 @@ namespace Platformer.Mechanics
             InFlight,
             Landed
         }
+        public void Dig()
+        {
+            for(int i = 0; i<hitpoint.Length; i++)
+            {
+                Collider2D overCollider2d = Physics2D.OverlapCircle(hitpoint[i].position, 0.01f, whatisPlatform);
+                if (overCollider2d != null)
+                {
+                    overCollider2d.transform.GetComponent<Bricks>().MakeDot(hitpoint[i].position);
+                    break;
+                }
+            }
+            
+        }
     }
+
+
+    
 }
