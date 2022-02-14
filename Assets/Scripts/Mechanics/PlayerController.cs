@@ -161,6 +161,7 @@ namespace Platformer.Mechanics
                 if (overCollider2d != null)
                 {
                     overCollider2d.transform.GetComponent<Bricks>().MakeDot(hitpoint[i].position);
+                    Debug.Log(hitpoint[i].position);
                     break;
                 }
             }
