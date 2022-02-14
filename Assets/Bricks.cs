@@ -13,5 +13,6 @@ public class Bricks : MonoBehaviour
     {
         Vector3Int cellPosition = tilemap.WorldToCell(pos);
         tilemap.SetTile(cellPosition, null);
+        Debug.Log("SetTile");
     }
 }
